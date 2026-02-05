@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to Document Transcriber</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-closed-captioning"></i>
+                <h1>VideoTranscriber</h1>
+            </div>
+            <p class="subtitle">Powered by OpenAI Whisper</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-card">
+                    <div class="upload-area" id="dropZone">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Upload Video or Audio</h3>
+                        <p class="upload-text">Drag and drop your file here, or click to browse</p>
+                        <p class="file-types">Supported: MP4, AVI, MOV, MKV, WEBM, MP3, WAV, M4A, OGG, FLAC</p>
+                        <input type="file" id="fileInput" accept=".mp4,.avi,.mov,.mkv,.webm,.mp3,.wav,.m4a,.ogg,.flac" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Choose File
+                        </button>
+                    </div>
+                    
+                    <!-- Selected File Info -->
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-preview">
+                            <i class="fas fa-file-video" id="fileIcon"></i>
+                        </div>
+                        <div class="file-details">
+                            <h4 id="fileName">filename.mp4</h4>
+                            <p id="fileSize">0 MB</p>
+                        </div>
+                        <button class="btn btn-icon" id="removeFile" title="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="options-section" id="optionsSection" style="display: none;">
+                        <div class="option-group">
+                            <label for="languageSelect">
+                                <i class="fas fa-language"></i> Language
+                            </label>
+                            <select id="languageSelect">
+                                <option value="auto">Auto-detect</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="taskSelect">
+                                <i class="fas fa-tasks"></i> Task
+                            </label>
+                            <select id="taskSelect">
+                                <option value="transcribe">Transcribe (Original Language)</option>
+                                <option value="translate">Translate to English</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons" id="actionButtons" style="display: none;">
+                        <button class="btn btn-primary btn-lg" id="transcribeBtn">
+                            <i class="fas fa-play"></i> Start Transcription
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-card">
+                    <div class="processing-animation">
+                        <div class="wave-container">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                        </div>
+                    </div>
+                    <h3>Transcribing...</h3>
+                    <p class="processing-text">Please wait while we process your file</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Initializing...</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-card">
+                    <div class="results-header">
+                        <h3><i class="fas fa-check-circle"></i> Transcription Complete</h3>
+                        <button class="btn btn-secondary" id="newTranscriptionBtn">
+                            <i class="fas fa-plus"></i> New Transcription
+                        </button>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="durationStat">0:00</span>
+                                <span class="stat-label">Duration</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-globe"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="languageStat">-</span>
+                                <span class="stat-label">Language</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-align-left"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="segmentsStat">0</span>
+                                <span class="stat-label">Segments</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transcription Preview -->
+                    <div class="transcription-preview">
+                        <div class="preview-header">
+                            <h4><i class="fas fa-file-alt"></i> Transcription Preview</h4>
+                        </div>
+                        <div class="preview-content" id="transcriptionText">
+                            <!-- Transcription text will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Downloads -->
+                    <div class="downloads-section">
+                        <h4><i class="fas fa-download"></i> Download Files</h4>
+                        <div class="download-buttons">
+                            <a href="#" class="btn btn-download" id="downloadDoc" download>
+                                <i class="fas fa-file-alt"></i>
+                                <span>Document (.txt)</span>
+                            </a>
+                            <a href="#" class="btn btn-download" id="downloadSrt" download>
+                                <i class="fas fa-closed-captioning"></i>
+                                <span>Subtitles (.srt)</span>
+                            </a>
+                            <a href="#" class="btn btn-download" id="downloadJson" download>
+                                <i class="fas fa-file-code"></i>
+                                <span>JSON Data (.json)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Transcription Failed</h3>
+                    <p id="errorMessage">An error occurred during transcription.</p>
+                    <button class="btn btn-primary" id="tryAgainBtn">
+                        <i class="fas fa-redo"></i> Try Again
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by <a href="https://github.com/openai/whisper" target="_blank">OpenAI Whisper</a> | Built with Flask</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
