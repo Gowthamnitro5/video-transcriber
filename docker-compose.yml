@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: video-transcriber
+    ports:
+      - "80:5000"
+    volumes:
+      - ./uploads:/app/uploads
+    restart: always
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G

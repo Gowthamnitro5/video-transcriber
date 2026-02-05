@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Render build script
+# Build script for Render
+
+set -e
 
 echo "Installing FFmpeg..."
-apt-get update && apt-get install -y ffmpeg
+apt-get update -qq && apt-get install -y -qq ffmpeg > /dev/null 2>&1
 
 echo "FFmpeg installed successfully"
-ffmpeg -version
+ffmpeg -version | head -1

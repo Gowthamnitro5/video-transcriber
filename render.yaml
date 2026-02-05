@@ -1,18 +1,15 @@
-# Build commands
-buildCommand: "./build.sh"
-
-# Start command
-startCommand: "./start.sh"
-
-# Environment variables
-envVars:
-  - key: PYTHON_VERSION
-    value: "3.9.0"
-  - key: FLASK_ENV
-    value: "production"
-
-# Disk (for uploads and models)
-disk:
-  name: uploads
-  mountPath: /opt/render/project/src/uploads
-  sizeGB: 1
+services:
+  - type: web
+    name: video-transcriber
+    runtime: docker
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.9.0"
+      - key: FLASK_ENV
+        value: "production"
+    disk:
+      name: uploads
+      mountPath: /app/uploads
+      sizeGB: 1
+    autoDeploy: true

@@ -14,7 +14,7 @@ CORS(app)
 # Configuration
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov', 'mkv', 'webm', 'mp3', 'wav', 'm4a', 'ogg', 'flac'}
-MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB max file size (Render free tier)
+MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500MB max file size
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
@@ -22,11 +22,11 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 # Create upload folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Load Whisper model (using tiny model for Render free tier)
+# Load Whisper model (using base model for good balance)
 # Options: tiny, base, small, medium, large
-# NOTE: Use "tiny" for Render free tier (512MB RAM limit)
+# With 4GB RAM on Hostinger VPS, we can use "base" or "small" model
 print("Loading Whisper model...")
-model = whisper.load_model("tiny")
+model = whisper.load_model("base")
 print("Model loaded successfully!")
 
 def allowed_file(filename):
